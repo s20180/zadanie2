@@ -4,7 +4,7 @@ namespace LegacyApp;
 
 public class UserValidationService
 {
-    public bool validate(string firstName, string lastName, string email, DateTime dateOfBirth)
+    public bool validateUserData(string firstName, string lastName, string email, DateTime dateOfBirth)
     {
         return validateUserName(firstName, lastName) && validateUserEmail(email) && validateAge(dateOfBirth);
     }
@@ -26,5 +26,10 @@ public class UserValidationService
         if (now.Month < dateOfBirth.Month || (now.Month == dateOfBirth.Month && now.Day < dateOfBirth.Day)) age--;
 
         return age > 21;
+    }
+
+    public bool validateUserCredit(User user)
+    {
+        return user.HasCreditLimit && user.CreditLimit < 500;
     }
 }
