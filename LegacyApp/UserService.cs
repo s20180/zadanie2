@@ -7,7 +7,7 @@ namespace LegacyApp
         public bool AddUser(string firstName, string lastName, string email, DateTime dateOfBirth, int clientId)
         {
             UserValidationService validator = new UserValidationService();
-            if (!validator.validate(firstName, lastName, email, dateOfBirth))
+            if (!validator.validateUserData(firstName, lastName, email, dateOfBirth))
             {
                 return false;
             }
@@ -24,30 +24,9 @@ namespace LegacyApp
                 LastName = lastName
             };
             
-            if (client.Type == "VeryImportantClient")
-            {
-                user.HasCreditLimit = false;
-            }
-            else if (client.Type == "ImportantClient")
-            {
-                using (var userCreditService = new UserCreditService())
-                {
-                    int creditLimit = userCreditService.GetCreditLimit(user.LastName, user.DateOfBirth);
-                    creditLimit = creditLimit * 2;
-                    user.CreditLimit = creditLimit;
-                }
-            }
-            else
-            {
-                user.HasCreditLimit = true;
-                using (var userCreditService = new UserCreditService())
-                {
-                    int creditLimit = userCreditService.GetCreditLimit(user.LastName, user.DateOfBirth);
-                    user.CreditLimit = creditLimit;
-                }
-            }
+            client.Type.evalUserCredit(user);
             
-            if (user.HasCreditLimit && user.CreditLimit < 500)
+            if (validator.validateUserCredit(user))
             {
                 return false;
             }
